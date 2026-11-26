@@ -20,6 +20,10 @@ class AppDelegate: NSObject, NSApplicationDelegate,
   let config = UserConfig()
 
   var state: UserState!
+
+  /// URLs that arrive before the controller and its theme window exist, such as
+  /// the one that launched the app. Handled once they're ready.
+  private var pendingURLs: [URL] = []
   @IBOutlet var updaterController: SPUStandardUpdaterController!
 
   lazy var settingsWindowController = SettingsWindowController(
@@ -215,6 +219,21 @@ class AppDelegate: NSObject, NSApplicationDelegate,
   // MARK: - URL Scheme Handling
 
   func application(_ application: NSApplication, open urls: [URL]) {
+    pendingURLs.append(contentsOf: urls)
+    handlePendingURLs()
+  }
+
+  /// The theme window is created asynchronously after launch, so wait for it.
+  private func handlePendingURLs() {
+    guard !pendingURLs.isEmpty else { return }
+    guard controller?.window != nil else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        self?.handlePendingURLs()
+      }
+      return
+    }
+    let urls = pendingURLs
+    pendingURLs = []
     for url in urls {
       handleURL(url)
     }

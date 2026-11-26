@@ -87,7 +87,8 @@ enum WhichKey {
     /// Splits items into columns filled top-to-bottom, like which-key does.
     var columns: [[ActionOrGroup]] {
       let usable = layout.width - 32
-      let maxColumns = max(1, Int(usable / WhichKey.columnWidth))
+      let spacing = 16.0
+      let maxColumns = max(1, Int((usable + spacing) / (WhichKey.columnWidth + spacing)))
       let rows = max(1, Int((Double(items.count) / Double(maxColumns)).rounded(.up)))
       return stride(from: 0, to: items.count, by: rows).map { start in
         Array(items[start..<min(start + rows, items.count)])

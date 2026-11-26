@@ -99,9 +99,8 @@ final class UserConfigTests: XCTestCase {
   }
 
   func testShowsAlertWhenConfigFileFailsToParse() throws {
-    // First ensure we're in the default directory since custom dirs are no longer supported
-    Defaults[.configDir] = UserConfig.defaultDirectory()
-
+    // Stay in the temporary directory from setUp: the default directory is the
+    // real one in Application Support, and writing there breaks the user's config.
     let invalidJSON = "{ invalid json }"
     try invalidJSON.write(to: subject.url, atomically: true, encoding: .utf8)
 
