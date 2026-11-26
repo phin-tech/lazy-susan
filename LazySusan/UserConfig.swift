@@ -497,6 +497,12 @@ struct Group: Item, Codable, Equatable {
   /// A dynamic group's command: its output fills `actions` each time the group
   /// is entered (see docs/integrations.md).
   var source: String?
+  /// Show this group's items as soon as it is entered, ignoring the cheatsheet
+  /// delay. Unset means yes for dynamic groups, no otherwise.
+  var showImmediately: Bool?
+
+  /// Whether entering the group reveals its items at once.
+  var revealsImmediately: Bool { showImmediately ?? (source != nil) }
 
   var displayName: String {
     guard let labelValue = label else { return "Group" }
@@ -507,12 +513,16 @@ struct Group: Item, Codable, Equatable {
   static func == (lhs: Group, rhs: Group) -> Bool {
     return lhs.key == rhs.key && lhs.type == rhs.type && lhs.label == rhs.label
       && lhs.iconPath == rhs.iconPath && lhs.actions == rhs.actions && lhs.source == rhs.source
+      && lhs.showImmediately == rhs.showImmediately
   }
-  private enum CodingKeys: String, CodingKey { case key, type, label, iconPath, actions, source }
+  private enum CodingKeys: String, CodingKey {
+    case key, type, label, iconPath, actions, source, showImmediately
+  }
 
   init(
     uiid: UUID = UUID(), key: String?, type: Type = .group, label: String? = nil,
-    iconPath: String? = nil, actions: [ActionOrGroup], source: String? = nil
+    iconPath: String? = nil, actions: [ActionOrGroup], source: String? = nil,
+    showImmediately: Bool? = nil
   ) {
     self.uiid = uiid
     self.key = key
@@ -521,6 +531,7 @@ struct Group: Item, Codable, Equatable {
     self.iconPath = iconPath
     self.actions = actions
     self.source = source
+    self.showImmediately = showImmediately
   }
 
   init(from decoder: Decoder) throws {
@@ -531,6 +542,7 @@ struct Group: Item, Codable, Equatable {
     self.label = try c.decodeIfPresent(String.self, forKey: .label)
     self.iconPath = try c.decodeIfPresent(String.self, forKey: .iconPath)
     self.source = try c.decodeIfPresent(String.self, forKey: .source)
+    self.showImmediately = try c.decodeIfPresent(Bool.self, forKey: .showImmediately)
     self.actions =
       try c.decodeIfPresent([ActionOrGroup].self, forKey: .actions) ?? []
   }
@@ -547,6 +559,7 @@ struct Group: Item, Codable, Equatable {
     if let l = label, !l.isEmpty { try c.encode(l, forKey: .label) }
     try c.encodeIfPresent(iconPath, forKey: .iconPath)
     try c.encodeIfPresent(source, forKey: .source)
+    try c.encodeIfPresent(showImmediately, forKey: .showImmediately)
   }
 }
 
@@ -562,7 +575,7 @@ enum ActionOrGroup: Codable, Equatable {
   }
 
   private enum CodingKeys: String, CodingKey {
-    case key, type, value, actions, label, iconPath, source
+    case key, type, value, actions, label, iconPath, source, showImmediately
   }
 
   var uiid: UUID {
@@ -587,8 +600,11 @@ enum ActionOrGroup: Codable, Equatable {
         source == nil
         ? try container.decode([ActionOrGroup].self, forKey: .actions)
         : (try container.decodeIfPresent([ActionOrGroup].self, forKey: .actions) ?? [])
+      let showImmediately = try container.decodeIfPresent(Bool.self, forKey: .showImmediately)
       self = .group(
-        Group(key: key, label: label, iconPath: iconPath, actions: actions, source: source))
+        Group(
+          key: key, label: label, iconPath: iconPath, actions: actions, source: source,
+          showImmediately: showImmediately))
     default:
       let value = try container.decode(String.self, forKey: .value)
       self = .action(Action(key: key, type: type, label: label, value: value, iconPath: iconPath))
@@ -628,6 +644,7 @@ enum ActionOrGroup: Codable, Equatable {
       }
       try container.encodeIfPresent(group.iconPath, forKey: .iconPath)
       try container.encodeIfPresent(group.source, forKey: .source)
+      try container.encodeIfPresent(group.showImmediately, forKey: .showImmediately)
     }
   }
 }

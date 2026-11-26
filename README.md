@@ -22,7 +22,7 @@ Pick either in Settings ▸ General ▸ Theme.
 
   Commands get the text as `$LAZYSUSAN_INPUT` (`{input}` becomes `"$LAZYSUSAN_INPUT"`), so quotes, `;` and `$(…)` in what you type are never run as shell code, in sh, zsh, bash or fish. URLs get it percent-encoded.
 
-- **Dynamic groups**: a group with a `source` command fills itself each time you enter it, from the command's JSON output, so a group can list your current workspaces or windows.
+- **Dynamic groups**: a group with a `source` command fills itself each time you enter it, from the command's JSON output, so a group can list your current workspaces or windows. It shows its items at once, without the cheatsheet delay; any group can opt in with `"showImmediately": true`.
 - **Other apps can add their commands**: an app can offer to install a group into Lazy Susan with `lazysusan://install?file=…`; Lazy Susan asks you first. [docs/integrations.md](docs/integrations.md) has the formats.
 ### Coming from Leader Key
 

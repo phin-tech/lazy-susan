@@ -187,6 +187,10 @@ class Controller {
         userState.display = group.key
         userState.navigateToGroup(group)
         loadDynamicGroup(group)
+        if group.revealsImmediately {
+          cheatsheetTimer?.invalidate()
+          showCheatsheet()
+        }
       }
     case .none:
       window.notFound()

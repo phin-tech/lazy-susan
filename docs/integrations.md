@@ -36,9 +36,12 @@ A group with a `source` command (and no `actions`) is filled each time the user 
 and reads its standard output as JSON: either an array of items or `{ "actions": [ ... ] }`.
 
 - It must finish within 3 seconds and exit 0. Otherwise the group shows as failed, with the first line of standard
-  error.
+  error (the last line, since a login shell such as fish may print its own startup errors first).
 - Items may leave out `key`. Lazy Susan then gives them `1`–`9`, `0`, then `a`–`z`, skipping keys already used.
 - Items may be groups, including other dynamic groups.
+- A dynamic group shows its items as soon as it is entered, even when the user has the cheatsheet on a delay: its
+  items change, so nobody knows them by heart. Any group can set `"showImmediately": true` (or `false` to turn this
+  off for a dynamic group).
 
 Example output of `cubicle leader go`:
 

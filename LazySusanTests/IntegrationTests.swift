@@ -36,8 +36,8 @@ final class DynamicSourceTests: XCTestCase {
     XCTAssertEqual(try DynamicSource.parse(data).get().count, 1)
   }
 
-  func testReportsAFailingCommandWithItsFirstErrorLine() {
-    let result = DynamicSource.run("echo 'no socket' >&2; echo more >&2; exit 3")
+  func testReportsAFailingCommandWithItsLastErrorLine() {
+    let result = DynamicSource.run("echo 'shell noise' >&2; echo 'no socket' >&2; exit 3")
     XCTAssertEqual(result, .failure(.failed(status: 3, message: "no socket")))
   }
 
@@ -68,6 +68,20 @@ final class DynamicGroupConfigTests: XCTestCase {
     guard case .group(let group) = try JSONDecoder().decode(ActionOrGroup.self, from: Data(json.utf8))
     else { return XCTFail("expected a group") }
     XCTAssertEqual(group.actions, [])
+  }
+
+  func testDynamicGroupsShowImmediatelyUnlessTurnedOff() throws {
+    XCTAssertTrue(Group(key: "s", actions: [], source: "x").revealsImmediately)
+    XCTAssertFalse(Group(key: "s", actions: []).revealsImmediately)
+    XCTAssertFalse(
+      Group(key: "s", actions: [], source: "x", showImmediately: false).revealsImmediately)
+
+    let json = #"{"key":"p","type":"group","showImmediately":true,"actions":[]}"#
+    guard case .group(let group) = try JSONDecoder().decode(ActionOrGroup.self, from: Data(json.utf8))
+    else { return XCTFail("expected a group") }
+    XCTAssertTrue(group.revealsImmediately)
+    let encoded = try JSONEncoder().encode(ActionOrGroup.group(group))
+    XCTAssertTrue(String(decoding: encoded, as: UTF8.self).contains(#""showImmediately":true"#))
   }
 
   func testPlainGroupStillNeedsActions() {

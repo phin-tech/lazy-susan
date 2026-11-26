@@ -60,9 +60,11 @@ enum DynamicSource {
     reader.sync {}
 
     guard task.terminationStatus == 0 else {
+      // The last line: a login shell (fish, say) may print its own startup
+      // errors before the command's.
       let message =
         String(data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?
-        .split(whereSeparator: \.isNewline).first.map(String.init) ?? ""
+        .split(whereSeparator: \.isNewline).last.map(String.init) ?? ""
       return .failure(.failed(status: task.terminationStatus, message: message))
     }
     return .success(data)
