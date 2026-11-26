@@ -1,0 +1,113 @@
+name: LazySusan
+options:
+  bundleIdPrefix: tech.phin
+  deploymentTarget:
+    macOS: "13.0"
+settings:
+  base:
+    # The release version. app-release and bump-my-version read and write these two.
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+packages:
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 2.4.0
+  Defaults:
+    url: https://github.com/sindresorhus/Defaults
+    from: 9.0.5
+  Settings:
+    url: https://github.com/sindresorhus/Settings
+    from: 3.1.1
+  LaunchAtLogin:
+    url: https://github.com/sindresorhus/LaunchAtLogin-Modern
+    from: 1.1.0
+  SymbolPicker:
+    url: https://github.com/xnth97/SymbolPicker
+    from: 1.6.2
+  Kingfisher:
+    url: https://github.com/onevcat/Kingfisher.git
+    from: 8.5.0
+  # In-place updates. app-release reads this version to fetch the matching appcast tools.
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.0
+targets:
+  LazySusan:
+    type: application
+    platform: macOS
+    sources:
+      - path: LazySusan
+    configFiles:
+      Debug: Signing.xcconfig
+      Release: Signing.xcconfig
+    dependencies:
+      - package: KeyboardShortcuts
+      - package: Defaults
+      - package: Settings
+      - package: LaunchAtLogin
+      - package: SymbolPicker
+      - package: Kingfisher
+      - package: Sparkle
+    settings:
+      base:
+        PRODUCT_NAME: LazySusan
+        PRODUCT_BUNDLE_IDENTIFIER: tech.phin.LazySusan
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Lazy Susan
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_NSHumanReadableCopyright: ""
+        INFOPLIST_KEY_NSMainStoryboardFile: Main
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        ENABLE_HARDENED_RUNTIME: YES
+        ENABLE_PREVIEWS: YES
+        DEAD_CODE_STRIPPING: YES
+        COMBINE_HIDPI_IMAGES: YES
+        DEVELOPMENT_ASSET_PATHS: "\"LazySusan/Support/Preview Content\""
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
+    # xcodegen writes these from the properties below; Generated/ is gitignored.
+    entitlements:
+      path: Generated/LazySusan.entitlements
+      properties: {}
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en]
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Viewer
+            CFBundleURLName: tech.phin.LazySusan
+            CFBundleURLSchemes: [lazysusan]
+        # Sparkle: the appcast is an asset of the newest GitHub release (`just appcast` uploads it), and updates
+        # must be signed by sparkle_private_key in the secrets store (the key every phin-tech app shares).
+        SUFeedURL: https://github.com/phin-tech/lazy-susan/releases/latest/download/appcast.xml
+        SUPublicEDKey: 2mirghhdXOaz0RtSlgkR5MOzQxF+QkubzK9tgq8eO8U=
+  LazySusanTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [LazySusanTests]
+    configFiles:
+      Debug: Signing.xcconfig
+      Release: Signing.xcconfig
+    dependencies:
+      - target: LazySusan
+    settings:
+      base:
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: tech.phin.LazySusanTests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/LazySusan.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LazySusan
+        BUNDLE_LOADER: $(TEST_HOST)
+schemes:
+  LazySusan:
+    build:
+      targets:
+        LazySusan: all
+        LazySusanTests: [test]
+    test:
+      targets: [LazySusanTests]

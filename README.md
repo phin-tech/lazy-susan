@@ -1,40 +1,29 @@
-# NB: Leader Key has been surpassed by [Tuna](https://tunaformac.com)
+# Lazy Susan
 
-Tuna is a complete launcher – much more capable, and with **Leader Key built in!**
+Every shortcut you need, one spin away: a keyboard launcher for macOS where nested key sequences open apps, URLs, folders and commands.
 
-[![Meet Tuna](https://img.youtube.com/vi/vkm-ZFlivyI/mqdefault.jpg)](https://www.youtube.com/watch?v=vkm-ZFlivyI)
+Lazy Susan is a fork of [Leader Key](https://github.com/mikker/LeaderKey) by [Mikkel Malmberg](https://github.com/mikker) (MIT licensed; see `LICENSE`). Nearly everything here is his work. If you like the idea, look at his newer launcher, [Tuna](https://tunaformac.com), which has Leader Key built in.
 
-[Leader Key will stay free and open source](https://github.com/mikker/LeaderKey/discussions/314#discussioncomment-15939059) but my focus will be on Tuna going forward. 
+What Lazy Susan adds:
 
----
-  
-<img src="https://s3.brnbw.com/icon_1024-akc2Ij3q9JOyhQ6Y7Lz6AFkX6nQQFhrQaRPqbV4vor0A62EA0vq4xOGrXpg6PVKi3aUJxOAyItkyktblPtZD4K4oYZ1bJVdh96VE.png" width="256" height="256" alt="Leader Key.app" />
+- **Which Key theme**: a Spacemacs-style panel along the bottom of the screen that lists every key at the current level in columns, with groups marked `+Name` and the keys pressed so far in a status line.
+- **Radial theme**: a pie menu in the middle of the screen. At most 8 keys per ring, two rings, then a list. A trail shows the groups you've entered. It follows Settings ▸ Advanced ▸ Cheatsheet: *Always* opens the wheel straight away, *After …* keeps it a small dot until you hesitate for that long (so once you know your keys you never see it), and *Never* keeps it a dot. `?` opens it at any time.
+
+Pick either in Settings ▸ General ▸ Theme.
+
+### Coming from Leader Key
+
+Lazy Susan keeps its own settings and config, so it can run beside Leader Key. To bring your shortcuts over, copy `~/Library/Application Support/Leader Key/config.json` to `~/Library/Application Support/Lazy Susan/config.json`, or choose your existing folder under Settings ▸ Advanced ▸ Config directory. The URL scheme is `lazysusan://` in place of `leaderkey://`.
+
+## Using Lazy Susan
 
 **The \*faster than your launcher\* launcher**
 
 A riff on [Raycast](https://www.raycast.com), [@mxstbr's multi-key Karabiner setup](https://www.youtube.com/watch?v=m5MDv9qwhU8&t=540s), and Vim's `<leader>` key.
 
-Watch the intro video on YouTube:
-
-<div>
-<a href="https://www.youtube.com/watch?v=EQYakLsYSAQ"><img src="https://img.youtube.com/vi/EQYakLsYSAQ/maxresdefault.jpg" width=480></a>
-<a href="https://www.youtube.com/watch?v=hzzQl5FOL-k"><img src="https://img.youtube.com/vi/hzzQl5FOL-k/maxresdefault.jpg" width=480></a>
-</div>
-
-*Yes, I only have that one thumbnail face.*
-
 ## Install
 
-**Download**
-
-📦 [Download latest version](https://github.com/mikker/LeaderKey.app/releases)
-or
-
-**Homebrew**
-
-```sh
-$ brew install leader-key
-```
+Download Lazy Susan from [apps.phin.tech](https://apps.phin.tech) or the Phin Tech Store.
 
 ### Post-Install setup
 - Open the settings menu with the menu bar icon <img width="17" alt="Screenshot 2025-05-21 at 1 58 46 PM" src="https://github.com/user-attachments/assets/7ba2cd99-dbd1-4b23-a35b-c5579e797321" />
@@ -43,13 +32,13 @@ $ brew install leader-key
   <img width="213" alt="Screenshot 2025-05-21 at 2 01 56 PM" src="https://github.com/user-attachments/assets/5e486a9a-ee1c-4ac7-a2d9-f4d0a46eb734" />
 - Add your [shortcuts](#example-shortcuts) to the `Config` settings
 
-## Why Leader Key?
+## Why Lazy Susan?
 
 ### Problems with traditional launchers:
 
 1. Typing the name of the thing can be slow and give unpredictable results.
 2. Global shortcuts have limited combinations.
-3. Leader Key offers predictable, nested shortcuts -- like combos in a fighting game.
+3. Lazy Susan offers predictable, nested shortcuts -- like combos in a fighting game.
 
 ### Example Shortcuts:
 
@@ -59,59 +48,59 @@ $ brew install leader-key
 
 ## URL Scheme
 
-Leader Key supports URL scheme automation for integration with tools like Alfred, Raycast, shell scripts, and more.
+Lazy Susan supports URL scheme automation for integration with tools like Alfred, Raycast, shell scripts, and more.
 
 ### Available URL Schemes
 
 #### Configuration Management
 ```bash
 # Reload configuration from disk
-open "leaderkey://config-reload"
+open "lazysusan://config-reload"
 
 # Show config.json in Finder
-open "leaderkey://config-reveal"
+open "lazysusan://config-reveal"
 ```
 
 #### Window Control
 ```bash
-# Show Leader Key window
-open "leaderkey://activate"
+# Show Lazy Susan's window
+open "lazysusan://activate"
 
-# Hide Leader Key window
-open "leaderkey://hide"
+# Hide Lazy Susan's window
+open "lazysusan://hide"
 
 # Clear navigation state (return to root)
-open "leaderkey://reset"
+open "lazysusan://reset"
 ```
 
 #### Settings & Info
 ```bash
 # Open settings window
-open "leaderkey://settings"
+open "lazysusan://settings"
 
 # Show about dialog
-open "leaderkey://about"
+open "lazysusan://about"
 ```
 
 #### Navigation
 ```bash
 # Navigate through keys and execute actions
-open "leaderkey://navigate?keys=a,b,c"
+open "lazysusan://navigate?keys=a,b,c"
 
 # Navigate without executing (preview mode)
-open "leaderkey://navigate?keys=a,b,c&execute=false"
+open "lazysusan://navigate?keys=a,b,c&execute=false"
 ```
 
 ### Example Use Cases
 
-- **Alfred/Raycast workflows**: Trigger Leader Key shortcuts programmatically
+- **Alfred/Raycast workflows**: Trigger Lazy Susan shortcuts programmatically
 - **Shell scripts**: Automate configuration reloads after editing config.json
-- **Keyboard maestro**: Chain Leader Key actions with other automations
+- **Keyboard maestro**: Chain Lazy Susan actions with other automations
 - **External triggers**: Open specific action sequences from other applications
 
 ## FAQ
 
-#### What do I set as my Leader Key?
+#### What do I set as my leader key?
 
 Any key can be your leader key, but **only modifiers will not work**.
 
@@ -129,11 +118,11 @@ Using [Karabiner](https://karabiner-elements.pqrs.org/) you can do more fancy th
 - <kbd>right ⌘ + left ⌘</kbd> at once (bound to <kbd>F12</kbd>) my personal favorite
 - <kbd>caps lock</kbd> (bound to <kbd>hyper</kbd> when held, <kbd>F12</kbd> when pressed)
 
-See [@mikker's config](https://github.com/mikker/LeaderKey.app/wiki/@mikker's-config) in the wiki for akimbo cmds example.
+See [@mikker's config](https://github.com/mikker/LeaderKey.app/wiki/@mikker's-config) in the Leader Key wiki for an akimbo cmds example.
 
-#### I disabled the menubar item, how can I get Leader Key back?
+#### I disabled the menubar item, how can I get Lazy Susan back?
 
-Activate Leader Key, then <kbd>cmd + ,</kbd>.
+Activate Lazy Susan, then <kbd>cmd + ,</kbd>.
 
 #### Command action is failing with "Command not found"
 
@@ -146,4 +135,4 @@ You need to make sure your shell environment is correctly set up for non-interac
 
 ## License
 
-MIT
+MIT. See `LICENSE`: the original copyright is Mikkel Malmberg's.

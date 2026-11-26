@@ -1,4 +1,9 @@
-Updates/*
+.build/
+*.xcodeproj/
 *xcuserdata*
-default.profraw
 build/
+default.profraw
+DerivedData/
+Generated/
+Signing.local.xcconfig
+Updates/*
