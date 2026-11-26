@@ -68,6 +68,11 @@ class MainWindow: PanelWindow, NSWindowDelegate {
   func notFound() {
   }
 
+  /// Called when the user asks for help (`?`) on a theme without a separate
+  /// cheatsheet window, so the theme can show its own detailed view.
+  func revealDetails() {
+  }
+
   func cheatsheetOrigin(cheatsheetSize: NSSize) -> NSPoint {
     return NSPoint(x: 0, y: 0)
   }

@@ -272,6 +272,7 @@ class Controller {
 
   private func showCheatsheet() {
     if !window.hasCheatsheet {
+      window.revealDetails()
       return
     }
     positionCheatsheetWindow()

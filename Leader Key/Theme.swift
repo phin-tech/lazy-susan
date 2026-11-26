@@ -6,9 +6,11 @@ enum Theme: String, Defaults.Serializable {
   case breadcrumbs
   case forTheHorde
   case cheater
+  case whichKey
+  case radial
 
   static var all: [Theme] {
-    return [.mysteryBox, .mini, .breadcrumbs, .forTheHorde, .cheater]
+    return [.mysteryBox, .mini, .breadcrumbs, .forTheHorde, .cheater, .whichKey, .radial]
   }
 
   static func classFor(_ value: Theme) -> MainWindow.Type {
@@ -23,6 +25,10 @@ enum Theme: String, Defaults.Serializable {
       return ForTheHorde.Window.self
     case .cheater:
       return Cheater.Window.self
+    case .whichKey:
+      return WhichKey.Window.self
+    case .radial:
+      return Radial.Window.self
     }
   }
 
@@ -33,6 +39,8 @@ enum Theme: String, Defaults.Serializable {
     case .breadcrumbs: return "Breadcrumbs"
     case .forTheHorde: return "For The Horde"
     case .cheater: return "Cheater"
+    case .whichKey: return "Which Key"
+    case .radial: return "Radial"
     }
   }
 }
