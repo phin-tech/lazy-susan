@@ -8,6 +8,8 @@ final class UserState: ObservableObject {
   @Published var display: String?
   @Published var isShowingRefreshState: Bool
   @Published var navigationPath: [Group] = []
+  /// Set while a prompted action (`{input}`) is asking for text.
+  @Published var prompt: PromptState?
 
   var currentGroup: Group? {
     return navigationPath.last
@@ -28,6 +30,7 @@ final class UserState: ObservableObject {
     display = nil
     navigationPath = []
     isShowingRefreshState = false
+    prompt = nil
   }
 
   func navigateToGroup(_ group: Group) {

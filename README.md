@@ -11,6 +11,17 @@ What Lazy Susan adds:
 
 Pick either in Settings ▸ General ▸ Theme.
 
+- **Prompted actions**: put `{input}` in a command or URL and Lazy Susan asks for text before running it. Type, press ↩ to run, or esc to go back to the menu; ⌥⌫ deletes a word, ⌘⌫ clears, ⌘V pastes. For example, with [Cubicle](https://github.com/phin-tech/cubicle):
+
+  | Key | Type | Value |
+  | --- | --- | --- |
+  | `r` | Command | `cubicle rename {input}` |
+  | `g` | Command | `cubicle go {input}` |
+  | `t` | Command | `cubicle rename-tab {input}` |
+  | `s` | URL | `https://duckduckgo.com/?q={input}` |
+
+  Commands get the text as `$LAZYSUSAN_INPUT` (`{input}` becomes `"$LAZYSUSAN_INPUT"`), so quotes, `;` and `$(…)` in what you type are never run as shell code, in sh, zsh, bash or fish. URLs get it percent-encoded.
+
 ### Coming from Leader Key
 
 Lazy Susan keeps its own settings and config, so it can run beside Leader Key. To bring your shortcuts over, copy `~/Library/Application Support/Leader Key/config.json` to `~/Library/Application Support/Lazy Susan/config.json`, or choose your existing folder under Settings ▸ Advanced ▸ Config directory. The URL scheme is `lazysusan://` in place of `leaderkey://`.

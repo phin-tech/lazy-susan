@@ -1,7 +1,7 @@
 import Cocoa
 
 class CommandRunner {
-  static func run(_ command: String) {
+  static func run(_ command: String, environment: [String: String] = [:]) {
     let task = Process()
     let pipe = Pipe()
     let errorPipe = Pipe()
@@ -10,6 +10,9 @@ class CommandRunner {
     task.standardError = errorPipe
     task.launchPath = ProcessInfo.processInfo.environment["SHELL"] ?? "/bin/sh"
     task.arguments = ["-c", command]
+    if !environment.isEmpty {
+      task.environment = ProcessInfo.processInfo.environment.merging(environment) { _, new in new }
+    }
 
     do {
       try task.run()

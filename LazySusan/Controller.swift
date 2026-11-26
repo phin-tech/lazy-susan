@@ -21,6 +21,7 @@ class Controller {
 
   var window: MainWindow!
   var cheatsheetWindow: NSWindow!
+  var promptWindow: Prompt.Window!
   private var cheatsheetTimer: Timer?
 
   private var cancellables = Set<AnyCancellable>()
@@ -52,6 +53,7 @@ class Controller {
     }.store(in: &cancellables)
 
     self.cheatsheetWindow = Cheatsheet.createWindow(for: userState)
+    self.promptWindow = Prompt.Window(userState: userState)
   }
 
   func show() {
@@ -85,6 +87,7 @@ class Controller {
     }
 
     cheatsheetWindow?.orderOut(nil)
+    promptWindow?.orderOut(nil)
     cheatsheetTimer?.invalidate()
   }
 
@@ -92,6 +95,10 @@ class Controller {
     // Reset the delay timer
     if Defaults[.autoOpenCheatsheet] == .delay {
       scheduleCheatsheet()
+    }
+
+    if userState.prompt != nil, handlePromptKey(event) {
+      return
     }
 
     if event.modifierFlags.contains(.command) {
@@ -158,6 +165,8 @@ class Controller {
     }
 
     switch hit {
+    case .action(let action) where execute && ActionInput.needsInput(action):
+      startPrompt(for: action)
     case .action(let action):
       if execute {
         if let mods = modifiers, isInStickyMode(mods) {
@@ -300,7 +309,76 @@ class Controller {
     }
   }
 
-  private func runAction(_ action: Action) {
+  // MARK: - Prompted actions
+
+  private func startPrompt(for action: Action) {
+    cheatsheetWindow?.orderOut(nil)
+    cheatsheetTimer?.invalidate()
+    userState.prompt = PromptState(action: action)
+    promptWindow.show(on: window.screen ?? NSScreen.main ?? NSScreen())
+  }
+
+  private func endPrompt() {
+    userState.prompt = nil
+    promptWindow.orderOut(nil)
+  }
+
+  /// Edits the prompt's text. Returns false for keys it leaves to the normal
+  /// handling (⌘W, ⌘Q, ⌘,).
+  private func handlePromptKey(_ event: NSEvent) -> Bool {
+    guard var prompt = userState.prompt else { return false }
+
+    if event.modifierFlags.contains(.command) {
+      switch event.charactersIgnoringModifiers {
+      case "v":
+        if let pasted = NSPasteboard.general.string(forType: .string) {
+          prompt.text += pasted.components(separatedBy: .newlines).joined(separator: " ")
+          userState.prompt = prompt
+        }
+        return true
+      case "\u{7F}":  // ⌘⌫ clears the text
+        prompt.text = ""
+        userState.prompt = prompt
+        return true
+      default:
+        return false
+      }
+    }
+
+    switch event.keyCode {
+    case KeyHelpers.escape.rawValue:
+      endPrompt()
+    case KeyHelpers.enter.rawValue:
+      let (action, environment) = ActionInput.fill(prompt.action, with: prompt.text)
+      endPrompt()
+      hide {
+        self.runAction(action, environment: environment)
+      }
+    case KeyHelpers.backspace.rawValue:
+      if event.modifierFlags.contains(.option) {
+        prompt.text = Self.dropLastWord(prompt.text)
+      } else if !prompt.text.isEmpty {
+        prompt.text.removeLast()
+      }
+      userState.prompt = prompt
+    default:
+      let typed = (event.characters ?? "").filter { character in
+        !character.unicodeScalars.contains { CharacterSet.controlCharacters.contains($0) }
+      }
+      prompt.text += typed
+      userState.prompt = prompt
+    }
+    return true
+  }
+
+  static func dropLastWord(_ text: String) -> String {
+    var result = text
+    while result.last?.isWhitespace == true { result.removeLast() }
+    while let last = result.last, !last.isWhitespace { result.removeLast() }
+    return result
+  }
+
+  private func runAction(_ action: Action, environment: [String: String] = [:]) {
     switch action.type {
     case .application:
       NSWorkspace.shared.openApplication(
@@ -309,7 +387,7 @@ class Controller {
     case .url:
       openURL(action)
     case .command:
-      CommandRunner.run(action.value)
+      CommandRunner.run(action.value, environment: environment)
     case .folder:
       let path: String = (action.value as NSString).expandingTildeInPath
       NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: path)
