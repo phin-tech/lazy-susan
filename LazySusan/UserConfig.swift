@@ -494,6 +494,9 @@ struct Group: Item, Codable, Equatable {
   var label: String?
   var iconPath: String?
   var actions: [ActionOrGroup]
+  /// A dynamic group's command: its output fills `actions` each time the group
+  /// is entered (see docs/integrations.md).
+  var source: String?
 
   var displayName: String {
     guard let labelValue = label else { return "Group" }
@@ -503,13 +506,13 @@ struct Group: Item, Codable, Equatable {
 
   static func == (lhs: Group, rhs: Group) -> Bool {
     return lhs.key == rhs.key && lhs.type == rhs.type && lhs.label == rhs.label
-      && lhs.iconPath == rhs.iconPath && lhs.actions == rhs.actions
+      && lhs.iconPath == rhs.iconPath && lhs.actions == rhs.actions && lhs.source == rhs.source
   }
-  private enum CodingKeys: String, CodingKey { case key, type, label, iconPath, actions }
+  private enum CodingKeys: String, CodingKey { case key, type, label, iconPath, actions, source }
 
   init(
     uiid: UUID = UUID(), key: String?, type: Type = .group, label: String? = nil,
-    iconPath: String? = nil, actions: [ActionOrGroup]
+    iconPath: String? = nil, actions: [ActionOrGroup], source: String? = nil
   ) {
     self.uiid = uiid
     self.key = key
@@ -517,6 +520,7 @@ struct Group: Item, Codable, Equatable {
     self.label = label
     self.iconPath = iconPath
     self.actions = actions
+    self.source = source
   }
 
   init(from decoder: Decoder) throws {
@@ -526,7 +530,9 @@ struct Group: Item, Codable, Equatable {
     self.type = .group
     self.label = try c.decodeIfPresent(String.self, forKey: .label)
     self.iconPath = try c.decodeIfPresent(String.self, forKey: .iconPath)
-    self.actions = try c.decode([ActionOrGroup].self, forKey: .actions)
+    self.source = try c.decodeIfPresent(String.self, forKey: .source)
+    self.actions =
+      try c.decodeIfPresent([ActionOrGroup].self, forKey: .actions) ?? []
   }
 
   func encode(to encoder: Encoder) throws {
@@ -537,9 +543,10 @@ struct Group: Item, Codable, Equatable {
       try c.encode(textualKey, forKey: .key)
     }
     try c.encode(Type.group, forKey: .type)
-    try c.encode(actions, forKey: .actions)
+    try c.encode(source == nil ? actions : [], forKey: .actions)
     if let l = label, !l.isEmpty { try c.encode(l, forKey: .label) }
     try c.encodeIfPresent(iconPath, forKey: .iconPath)
+    try c.encodeIfPresent(source, forKey: .source)
   }
 }
 
@@ -555,7 +562,7 @@ enum ActionOrGroup: Codable, Equatable {
   }
 
   private enum CodingKeys: String, CodingKey {
-    case key, type, value, actions, label, iconPath
+    case key, type, value, actions, label, iconPath, source
   }
 
   var uiid: UUID {
@@ -567,15 +574,21 @@ enum ActionOrGroup: Codable, Equatable {
 
   init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    let key = try container.decode(String?.self, forKey: .key)
+    let key = try container.decodeIfPresent(String.self, forKey: .key)
     let type = try container.decode(Type.self, forKey: .type)
     let label = try container.decodeIfPresent(String.self, forKey: .label)
     let iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath)
 
     switch type {
     case .group:
-      let actions = try container.decode([ActionOrGroup].self, forKey: .actions)
-      self = .group(Group(key: key, label: label, iconPath: iconPath, actions: actions))
+      let source = try container.decodeIfPresent(String.self, forKey: .source)
+      // A dynamic group (`source`) may leave out `actions`.
+      let actions =
+        source == nil
+        ? try container.decode([ActionOrGroup].self, forKey: .actions)
+        : (try container.decodeIfPresent([ActionOrGroup].self, forKey: .actions) ?? [])
+      self = .group(
+        Group(key: key, label: label, iconPath: iconPath, actions: actions, source: source))
     default:
       let value = try container.decode(String.self, forKey: .value)
       self = .action(Action(key: key, type: type, label: label, value: value, iconPath: iconPath))
@@ -608,11 +621,13 @@ enum ActionOrGroup: Codable, Equatable {
         try container.encodeIfPresent(group.key, forKey: .key)
       }
       try container.encode(Type.group, forKey: .type)
-      try container.encode(group.actions, forKey: .actions)
+      // A dynamic group's items come from its source each time; never save them.
+      try container.encode(group.source == nil ? group.actions : [], forKey: .actions)
       if group.label != nil && !group.label!.isEmpty {
         try container.encodeIfPresent(group.label, forKey: .label)
       }
       try container.encodeIfPresent(group.iconPath, forKey: .iconPath)
+      try container.encodeIfPresent(group.source, forKey: .source)
     }
   }
 }

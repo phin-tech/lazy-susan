@@ -9,6 +9,7 @@ enum URLSchemeAction: Equatable {
   case hide
   case reset
   case navigate(keys: [String], execute: Bool)
+  case install(file: URL)
   case show  // Fallback for unknown hosts
   case invalid  // Invalid scheme
 }
@@ -44,6 +45,15 @@ class URLSchemeHandler {
       let keys = keysParam.split(separator: ",").map(String.init)
       let execute = queryItems.first(where: { $0.name == "execute" })?.value != "false"
       return .navigate(keys: keys, execute: execute)
+    case "install":
+      // lazysusan://install?file=<absolute path> (see docs/integrations.md)
+      guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+        let path = components.queryItems?.first(where: { $0.name == "file" })?.value,
+        path.hasPrefix("/")
+      else {
+        return .show
+      }
+      return .install(file: URL(fileURLWithPath: path))
     default:
       return .show
     }

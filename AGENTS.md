@@ -44,6 +44,7 @@ Lazy Susan is a macOS application that provides customizable keyboard shortcuts.
 - `FileMonitor` watches for changes and triggers reload
 - `ConfigValidator` ensures no key conflicts
 - Actions support: applications, URLs, commands, folders
+- `{input}` in a command or URL prompts for text (`Prompt.swift`); a group's `source` command fills it at run time (`DynamicSource.swift`); `lazysusan://install` adds another app's group (`GroupInstaller.swift`). The contract for other apps is `docs/integrations.md`: keep it in step with the code
 
 **Testing Architecture:**
 

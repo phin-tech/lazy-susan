@@ -260,6 +260,8 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     case .navigate(let keys, let execute):
       show()
       processKeys(keys, execute: execute)
+    case .install(let file):
+      GroupInstaller.install(fileAt: file, into: config)
     case .show:
       show()
     case .invalid:

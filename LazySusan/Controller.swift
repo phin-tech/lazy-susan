@@ -186,6 +186,7 @@ class Controller {
       } else {
         userState.display = group.key
         userState.navigateToGroup(group)
+        loadDynamicGroup(group)
       }
     case .none:
       window.notFound()
@@ -306,6 +307,29 @@ class Controller {
       case .action(let action):
         runAction(action)
       }
+    }
+  }
+
+  // MARK: - Dynamic groups
+
+  /// Fills a group that has a `source` command, once it has run. The group
+  /// shows straight away and its items appear when the command returns.
+  private func loadDynamicGroup(_ group: Group) {
+    guard let source = group.source else { return }
+    DynamicSource.load(source) { [weak self] result in
+      guard let self,
+        let index = self.userState.navigationPath.lastIndex(where: { $0.uiid == group.uiid })
+      else { return }  // The user has moved on.
+
+      var filled = self.userState.navigationPath[index]
+      switch result {
+      case .success(let items):
+        filled.actions = items
+      case .failure(let failure):
+        filled.actions = []
+        filled.label = "\(group.displayName): \(failure.summary)"
+      }
+      self.userState.navigationPath[index] = filled
     }
   }
 
