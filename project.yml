@@ -6,7 +6,7 @@ options:
 settings:
   base:
     # The release version. app-release and bump-my-version read and write these two.
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "0.0.0"
     CURRENT_PROJECT_VERSION: "1"
 packages:
   KeyboardShortcuts:
