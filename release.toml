@@ -1,0 +1,30 @@
+# What app-release (`just ship` and friends) knows about LazySusan. Every key: src/app_release/config.py
+# in https://git.phin.tech/sam/app-release. Top-level keys go before the tables.
+app = "Lazy Susan"
+scheme = "LazySusan"
+slug = "LazySusan"
+bundle_id = "tech.phin.LazySusan"
+repo = "phin-tech/lazy-susan"
+description = "A keyboard launcher with nested shortcuts, a Spacemacs-style panel and a radial menu"
+team_id = "J35P7AJDN7"
+
+# Signing and notarizing secrets: the phin-tech-store project in Infisical (`infisical login`), as the store's apps use.
+[secrets]
+provider = "infisical"
+project = "ab5ef8f1-af05-4d58-875d-f0e28832d026"
+environment = "prod"
+
+[homebrew]
+tap = "phin-tech/homebrew-tap"
+token = "lazysusan"
+macos = "ventura"
+
+# On the download page: the phin-apps bucket on Cloudflare R2, through the cf CLI (`cf auth login`). Under the name it
+# shows the description above. allow = ["someone@gmail.com"] keeps it to those people, after signing in (Cloudflare
+# Access); pin = true lists it first.
+[downloads]
+
+# `just notes patch` drafts release notes with a cheap model on OpenRouter. Its key is openrouter_api_key in the secrets
+# store unless this says otherwise (another field, or an op:// reference to any item); OPENROUTER_API_KEY overrides both.
+# [notes]
+# api_key = "op://Private/OpenRouter API Key/credential"

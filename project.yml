@@ -50,7 +50,8 @@ targets:
       - package: Sparkle
     settings:
       base:
-        PRODUCT_NAME: LazySusan
+        PRODUCT_NAME: Lazy Susan
+        PRODUCT_MODULE_NAME: LazySusan
         PRODUCT_BUNDLE_IDENTIFIER: tech.phin.LazySusan
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: YES
@@ -101,7 +102,7 @@ targets:
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: tech.phin.LazySusanTests
-        TEST_HOST: $(BUILT_PRODUCTS_DIR)/LazySusan.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LazySusan
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Lazy Susan.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Lazy Susan"
         BUNDLE_LOADER: $(TEST_HOST)
 schemes:
   LazySusan:

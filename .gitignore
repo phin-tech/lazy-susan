@@ -6,4 +6,3 @@ default.profraw
 DerivedData/
 Generated/
 Signing.local.xcconfig
-Updates/*

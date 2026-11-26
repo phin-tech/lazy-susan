@@ -1,0 +1,24 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v0.4.1
+_src_path: .
+app_name: LazySusan
+app_slug: lazysusan
+app_store: false
+build_settings: ''
+bundle_id: tech.phin.LazySusan
+bundle_prefix: tech.phin
+description: A keyboard launcher with nested shortcuts, a Spacemacs-style panel and
+    a radial menu
+devices: false
+downloads: true
+github_owner: phin-tech
+github_releases: true
+github_repo: phin-tech/lazy-susan
+homebrew_tap: phin-tech/homebrew-tap
+install_on_macs: false
+macos_min: '13.0'
+op_item: op://placeholder/replaced-by-secrets
+scheme: LazySusan
+scope: release
+several_apps: false
+team_id: J35P7AJDN7
